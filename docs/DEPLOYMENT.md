@@ -111,7 +111,7 @@ cd backend
 source .venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install pip Flask flask-cors flask-jwt-extended Flask-SQLAlchemy python-dotenv chromadb ollama pypdf groq psycopg2
 
 # The application will create tables automatically on first run
 python main.py
@@ -147,7 +147,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install pip Flask flask-cors flask-jwt-extended Flask-SQLAlchemy python-dotenv chromadb ollama pypdf groq psycopg2
 pip install gunicorn psycopg2-binary  # Add production dependencies
 ```
 
@@ -388,7 +388,7 @@ RUN apt-get update \
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt gunicorn psycopg2-binary
+RUN pip install --no-cache-dir pip Flask flask-cors flask-jwt-extended Flask-SQLAlchemy python-dotenv chromadb ollama pypdf groq psycopg2 gunicorn psycopg2-binary
 
 # Copy project
 COPY . .

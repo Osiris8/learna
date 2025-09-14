@@ -1,4 +1,4 @@
-# Learuma AI
+# Learna AI
 
 [![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/your-username/learuma-ai)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -31,25 +31,50 @@ A modern AI-powered chat application built with Flask backend and Next.js fronte
 learuma-ai/
 ├── backend/                 # Flask API server
 │   ├── app/                # Application modules
-│   │   ├── models/         # Database models (User, Chat, Message)
-│   │   ├── routes/         # API endpoints (auth, chat, message, upload)
+│   │   ├── models/         # Database models
+│   │   │   ├── user.py     # User model
+│   │   │   ├── chat.py     # Chat model
+│   │   │   └── message.py  # Message model
+│   │   ├── routes/         # API endpoints
+│   │   │   ├── __init__.py # Route initialization
+│   │   │   ├── auth.py     # Authentication routes
+│   │   │   ├── chat.py     # Chat management routes
+│   │   │   ├── message.py  # Message handling routes
+│   │   │   └── upload.py   # File upload routes
 │   │   └── services/       # Business logic services
+│   │       └── agent.py    # AI agent service
 │   ├── extensions/         # Flask extensions (database, chroma)
 │   ├── migrations/         # Database migrations
 │   ├── instance/           # Instance-specific files (SQLite DB)
 │   ├── chroma_db/          # Vector database storage
+│   ├── .venv/              # Python virtual environment
 │   ├── main.py             # Application entry point
 │   ├── config.py           # Configuration settings
+│   ├── .env                # Environment variables
+│   ├── .env.example        # Environment template
 │   └── requirements.txt    # Python dependencies
 ├── frontend/               # Next.js application
-│   ├── app/                # App Router pages (chat, dashboard, login, signup)
-│   ├── components/         # React components (UI, forms, chat interface)
-│   │   ├── ui/             # Reusable UI components
+│   ├── app/                # App Router pages
+│   │   ├── chat/           # Chat interface pages
+│   │   │   └── [id]/       # Dynamic chat routes
+│   │   ├── dashboard/      # Dashboard pages
+│   │   ├── login/          # Login page
+│   │   ├── signup/         # Signup page
+│   │   ├── layout.tsx      # Root layout
+│   │   └── page.tsx        # Home page
+│   ├── components/         # React components
+│   │   ├── ui/             # Reusable UI components (button, input, etc.)
 │   │   ├── magicui/        # Magic UI components
-│   │   └── prompt-kit/     # Prompt-related components
+│   │   ├── prompt-kit/     # Prompt-related components
+│   │   ├── chat.tsx        # Main chat interface
+│   │   ├── login-form.tsx  # Login form component
+│   │   ├── signup-form.tsx # Signup form component
+│   │   └── [other components] # Additional UI components
 │   ├── hooks/              # Custom React hooks
 │   ├── lib/                # Utility libraries
 │   ├── public/             # Static assets and images
+│   ├── .env.local          # Local environment variables
+│   ├── .env.example        # Environment template
 │   └── package.json        # Node.js dependencies
 ├── docs/                   # Documentation files
 │   ├── API.md              # API documentation
@@ -74,10 +99,10 @@ cd backend
 python -m venv .venv
 .venv\Scripts\activate  # Windows
 # source .venv/bin/activate  # macOS/Linux
-pip install -r requirements.txt
+pip install pip Flask flask-cors flask-jwt-extended Flask-SQLAlchemy python-dotenv chromadb ollama pypdf groq psycopg2
 cp .env.example .env
 # Configure your .env file
-python main.py
+flask --app main run
 ```
 
 ### Frontend Setup

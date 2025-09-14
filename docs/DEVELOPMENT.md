@@ -29,7 +29,7 @@ This guide covers development practices, coding standards, and workflows for the
 
 3. **Install dependencies**
    ```bash
-   pip install -r requirements.txt
+   pip install pip Flask flask-cors flask-jwt-extended Flask-SQLAlchemy python-dotenv chromadb ollama pypdf groq psycopg2
    ```
 
 4. **Configure environment**
@@ -105,21 +105,26 @@ backend/
 frontend/
 ├── app/                 # Next.js App Router
 │   ├── chat/           # Chat interface pages
+│   │   └── [id]/       # Dynamic chat routes
 │   ├── dashboard/      # Dashboard pages
 │   ├── login/          # Login page
 │   ├── signup/         # Signup page
 │   ├── layout.tsx      # Root layout
 │   └── page.tsx        # Home page
 ├── components/         # React components
-│   ├── ui/             # Reusable UI components
+│   ├── ui/             # Reusable UI components (40+ components)
 │   ├── magicui/        # Magic UI components
-│   ├── prompt-kit/     # Prompt-related components
-│   ├── chat.tsx        # Chat interface
-│   ├── login-form.tsx  # Login form
-│   └── signup-form.tsx # Signup form
+│   ├── prompt-kit/     # Prompt-related components (9 components)
+│   ├── chat.tsx        # Main chat interface
+│   ├── login-form.tsx  # Login form component
+│   ├── signup-form.tsx # Signup form component
+│   ├── dashboard-*.tsx # Dashboard components
+│   └── [other components] # Navigation, theme, and utility components
 ├── hooks/              # Custom React hooks
 ├── lib/                # Utility libraries
 ├── public/             # Static assets
+├── .env.local          # Local environment variables
+├── .env.example        # Environment template
 └── package.json        # Dependencies and scripts
 ```
 
