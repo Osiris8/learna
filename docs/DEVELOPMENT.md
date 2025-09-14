@@ -78,6 +78,7 @@ backend/
 │   │   ├── chat.py      # Chat model
 │   │   └── message.py   # Message model
 │   ├── routes/          # API endpoints
+│   │   ├── __init__.py  # Route initialization
 │   │   ├── auth.py      # Authentication routes
 │   │   ├── chat.py      # Chat management routes
 │   │   ├── message.py   # Message handling routes
@@ -90,8 +91,11 @@ backend/
 ├── migrations/          # Database migrations
 ├── instance/            # Instance-specific files
 ├── chroma_db/           # Vector database storage
+├── .venv/               # Python virtual environment
 ├── main.py              # Application entry point
 ├── config.py            # Configuration settings
+├── .env                 # Environment variables
+├── .env.example         # Environment template
 └── requirements.txt     # Python dependencies
 ```
 
