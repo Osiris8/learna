@@ -1,202 +1,142 @@
-# Interactive Tutor AI Chat
+# Learuma AI
 
-A web-based application that provides personalized AI tutoring through a conversational interface with Retrieval-Augmented Generation (RAG) capabilities.
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/your-username/learuma-ai)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://python.org)
+[![Node.js](https://img.shields.io/badge/node.js-18+-green.svg)](https://nodejs.org)
 
-## Project Structure
+A modern AI-powered chat application built with Flask backend and Next.js frontend, featuring real-time conversations, user authentication, and file upload capabilities.
 
-```
-├── backend/                 # Flask backend API
-│   ├── app/                # Application package
-│   │   ├── models/         # Database models
-│   │   ├── routes/         # API endpoints
-│   │   ├── services/       # Business logic services
-│   │   └── utils/          # Utility functions
-│   ├── extensions/         # Flask extensions
-│   ├── migrations/         # Database migrations
-│   ├── config.py          # Configuration settings
-│   ├── main.py            # Application entry point
-│   └── requirements.txt   # Python dependencies
-├── frontend/               # Next.js frontend
-│   ├── app/               # Next.js app directory
-│   ├── components/        # React components
-│   ├── lib/               # Utility libraries
-│   ├── hooks/             # Custom React hooks
-│   └── public/            # Static assets
-└── .kiro/                 # Kiro specifications
-    └── specs/             # Feature specifications
-```
-
-## Technology Stack
+## 🚀 Technology Stack
 
 ### Backend
-- **Framework**: Flask with Flask-RESTful
-- **Database**: PostgreSQL (SQLAlchemy ORM)
-- **Authentication**: JWT with Flask-JWT-Extended
-- **AI Integration**: OpenAI API
-- **Vector Database**: ChromaDB for RAG
-- **Embeddings**: Sentence Transformers
-- **Caching**: Redis
+- **Flask** - Python web framework
+- **SQLAlchemy** - Database ORM
+- **Flask-JWT-Extended** - JWT authentication
+- **Flask-CORS** - Cross-origin resource sharing
+- **ChromaDB** - Vector database for AI embeddings
+- **Python 3.8+** - Programming language
 
 ### Frontend
-- **Framework**: Next.js 15 with TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI
-- **State Management**: React Context + useReducer
-- **HTTP Client**: Axios
-- **Authentication**: JWT with automatic refresh
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type-safe JavaScript
+- **Tailwind CSS** - Utility-first CSS framework
+- **Radix UI** - Accessible component library
+- **React Markdown** - Markdown rendering
+- **Axios** - HTTP client
 
-## Setup Instructions
+## 📁 Project Structure
+
+```
+learuma-ai/
+├── backend/                 # Flask API server
+│   ├── app/                # Application modules
+│   │   ├── models/         # Database models (User, Chat, Message)
+│   │   ├── routes/         # API endpoints (auth, chat, message, upload)
+│   │   └── services/       # Business logic services
+│   ├── extensions/         # Flask extensions (database, chroma)
+│   ├── migrations/         # Database migrations
+│   ├── instance/           # Instance-specific files (SQLite DB)
+│   ├── chroma_db/          # Vector database storage
+│   ├── main.py             # Application entry point
+│   ├── config.py           # Configuration settings
+│   └── requirements.txt    # Python dependencies
+├── frontend/               # Next.js application
+│   ├── app/                # App Router pages (chat, dashboard, login, signup)
+│   ├── components/         # React components (UI, forms, chat interface)
+│   │   ├── ui/             # Reusable UI components
+│   │   ├── magicui/        # Magic UI components
+│   │   └── prompt-kit/     # Prompt-related components
+│   ├── hooks/              # Custom React hooks
+│   ├── lib/                # Utility libraries
+│   ├── public/             # Static assets and images
+│   └── package.json        # Node.js dependencies
+├── docs/                   # Documentation files
+│   ├── API.md              # API documentation
+│   ├── DEPLOYMENT.md       # Deployment guide
+│   └── DEVELOPMENT.md      # Development guide
+└── .kiro/                  # Kiro AI assistant configuration
+    ├── hooks/              # Agent hooks
+    └── specs/              # Project specifications
+```
+
+## 🏃‍♂️ Quick Start
 
 ### Prerequisites
-- Python 3.8+
-- Node.js 18+
-- Redis (for caching)
-- PostgreSQL (optional, SQLite used by default)
+- Python 3.8 or higher
+- Node.js 18 or higher
+- npm or yarn package manager
 
 ### Backend Setup
-
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-
-2. Create a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Copy environment configuration:
-   ```bash
-   cp .env.example .env
-   ```
-
-5. Update `.env` with your configuration:
-   - Set your OpenAI API key
-   - Configure database URI if using PostgreSQL
-   - Set email configuration for user registration
-
-6. Initialize the database:
-   ```bash
-   python init_db.py
-   ```
-
-7. Run the development server:
-   ```bash
-   python main.py
-   ```
-
-The backend API will be available at `http://localhost:5000`
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+# source .venv/bin/activate  # macOS/Linux
+pip install -r requirements.txt
+cp .env.example .env
+# Configure your .env file
+python main.py
+```
 
 ### Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Copy environment configuration:
-   ```bash
-   cp .env.example .env.local
-   ```
-
-4. Update `.env.local` if needed (default configuration should work for local development)
-
-5. Run the development server:
-   ```bash
-   npm run dev
-   ```
-
-The frontend will be available at `http://localhost:3000`
-
-## Features
-
-### Implemented
-- ✅ Project structure and development environment
-- ✅ Flask backend with proper package organization
-- ✅ Next.js frontend with TypeScript
-- ✅ Authentication system (JWT-based)
-- ✅ Database models and relationships
-- ✅ RAG system with ChromaDB integration
-- ✅ API client and context providers
-- ✅ Service layer architecture
-
-### In Development
-- 🔄 Authentication API endpoints
-- 🔄 Chat interface components
-- 🔄 Real-time messaging
-- 🔄 RAG-enhanced responses
-- 🔄 Document upload and management
-
-## API Endpoints
-
-### Authentication
-- `POST /api/auth/signup` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/logout` - User logout
-- `POST /api/auth/refresh` - Refresh JWT token
-
-### Conversations
-- `GET /api/conversations` - List user conversations
-- `POST /api/conversations` - Create new conversation
-- `GET /api/conversations/{id}` - Get conversation details
-- `DELETE /api/conversations/{id}` - Delete conversation
-
-### Messages
-- `GET /api/conversations/{id}/messages` - Get conversation messages
-- `POST /api/conversations/{id}/messages` - Send message
-
-### RAG System
-- `POST /api/rag/query` - RAG-enhanced query
-- `POST /api/rag/search` - Search knowledge base
-- `GET /api/rag/sources` - Get available sources
-
-### Documents
-- `POST /api/upload/document` - Upload document
-- `GET /api/documents` - List documents
-- `DELETE /api/documents/{id}` - Delete document
-
-## Development
-
-### Running Tests
 ```bash
-# Backend tests
-cd backend
-pytest
-
-# Frontend tests (when implemented)
 cd frontend
-npm test
+npm install
+cp .env.example .env.local
+# Configure your .env.local file
+npm run dev
 ```
 
-### Code Style
-- Backend: Follow PEP 8 guidelines
-- Frontend: ESLint configuration included
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:5000
 
-### Database Migrations
+## 📚 Documentation
+
+- [API Documentation](docs/API.md) - Complete API reference
+- [Development Guide](docs/DEVELOPMENT.md) - Coding standards and workflow
+- [Deployment Guide](docs/DEPLOYMENT.md) - Production deployment guide
+
+## ✨ Features
+
+- 🔐 **User Authentication** - Secure JWT-based authentication
+- 💬 **AI Chat Interface** - Real-time conversations with AI
+- 📁 **File Upload** - Support for document uploads
+- 🎨 **Modern UI** - Responsive design with dark/light themes
+- 🔄 **Real-time Updates** - Live chat functionality
+- 📱 **Mobile Friendly** - Optimized for all devices
+
+## 🛠️ Development
+
 ```bash
+# Backend development
 cd backend
-flask db migrate -m "Description of changes"
-flask db upgrade
+python main.py
+
+# Frontend development
+cd frontend
+npm run dev
+
+# Linting
+npm run lint
 ```
 
-## Contributing
+## 🤝 Contributing
 
-1. Follow the existing code structure and patterns
-2. Write tests for new features
-3. Update documentation as needed
-4. Follow the established naming conventions
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📄 License
 
-This project is for educational purposes.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+If you encounter any issues or have questions:
+- Open an issue on GitHub
+- Check the [Development Guide](docs/DEVELOPMENT.md) for troubleshooting
+- Review the [API Documentation](docs/API.md) for endpoint details

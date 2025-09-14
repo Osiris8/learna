@@ -1,0 +1,23 @@
+{
+  "enabled": true,
+  "name": "Documentation Structure Updater",
+  "description": "Monitors project structure changes and updates README.md, API.md, DEPLOYMENT.md, and DEVELOPMENT.md files to reflect current file and folder organization",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "backend/**",
+      "frontend/**",
+      "docs/**",
+      "*.md",
+      "*.json",
+      "*.py",
+      "*.ts",
+      "*.js"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "The project structure has been modified. Please update the following documentation files to reflect the current file and folder structure: README.md, docs/API.md, docs/DEPLOYMENT.md, and docs/DEVELOPMENT.md. Focus on keeping the documentation accurate and up-to-date with the actual project organization."
+  }
+}
