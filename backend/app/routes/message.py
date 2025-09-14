@@ -1,141 +1,211 @@
-from flask import Blueprint, request, jsonify
+import os
+from flask import Blueprint,Response, request, stream_with_context, jsonify
+from ollama import chat
+from dotenv import load_dotenv
 from flask_jwt_extended import jwt_required, get_jwt_identity
+load_dotenv()
 from extensions.database import db
 from app.models.chat import Chat
 from app.models.message import Message
+from app.services.agent import AGENTS
 from extensions.chroma import get_collection, embed_text
+from groq import Groq
+message_bp = Blueprint("message", __name__)
 
 
-chat_bp = Blueprint("chats", __name__)
+OLLAMA_MODELS = os.environ.get("OLLAMA_MODELS", "gpt-oss:20b").split(",")
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+GROQ_MODELS = os.environ.get("GROQ_MODELS", "openai/gpt-oss-120b").split(",")
 
-# First user prompt from dashboard
 
-@chat_bp.route("/chat", methods=["POST"])
+
+def validate_model(model: str):
+    if model not in GROQ_MODELS:
+        raise ValueError(f"Model {model} is not allowed")
+
+@message_bp.route("/chat/<int:chat_id>/messages", methods=["POST"])
 @jwt_required()
-def create_chat():
-    data = request.json
+def stream_chat(chat_id):
     user_id = get_jwt_identity()
-
-    prompt = data.get("title")
+    data = request.get_json()
+    content = data.get("content")
+    model = data.get("model", "openai/gpt-oss-20b")
     agent_type = data.get("agent", "assistant")
-    model = data.get("model", "gpt-oss:20b")
 
-    if not prompt:
-        return jsonify({"error": "The title/prompt is required"}), 400
-    
-    chat = Chat(
-        title=prompt,
-        model=model,
-        agent=agent_type,
-        user_id=user_id
-    )
-    db.session.add(chat)
-    db.session.commit()
+    validate_model(model)
 
-    user_msg = Message(chat_id=chat.id, sender="user", content=prompt)
-    db.session.add(user_msg)
+    chat_obj = Chat.query.filter_by(id=chat_id, user_id=user_id).first_or_404()
 
    
+    user_msg = Message(chat_id=chat_id, sender="user", content=content)
+    db.session.add(user_msg)
     db.session.commit()
-    collection = get_collection(chat.id)
-    collection.add(
-    documents=[prompt],
-    embeddings=[embed_text(prompt)],
-    metadatas=[
-        {
-            "sender": "user",
-            "chat_id": chat.id,
-            "created_at": str(user_msg.created_at),
-            "message_id": user_msg.id,
-        },
-       
+
+    user_msg_data = {
+        "sender": "user",
+        "chat_id": chat_id,
+        "created_at": str(user_msg.created_at),
+        "message_id": user_msg.id
+    }
+
+    collection = get_collection(chat_id)
+
+    results = collection.query(
+        query_embeddings=[embed_text(content)],
+        n_results=5
+    )
+    system_prompt = AGENTS.get(agent_type) or ""
+    context = ""
+    if results.get("documents") and len(results["documents"]) > 0:
+        context = "\n".join(results["documents"][0])
+    if context:
+        system_prompt += f"\n\nContext:\n{context}"
+
+   
+
+    def generate():
+        full_response = ""
+        stream = client.chat.completions.create(
+            model=model,
+            messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": content}
+    
     ],
-    ids=[f"user_{user_msg.id}"]  
+            stream=True,
+        )
+        for chunk in stream:
+            piece = chunk.choices[0].delta.content
+            if piece:
+                full_response += piece
+                yield piece  
+
+        ai_msg = Message(chat_id=chat_id, sender="ai", content=full_response)
+        db.session.add(ai_msg)
+        db.session.commit()
+
+        
+        ai_msg_data = {
+            "sender": "ai",
+            "chat_id": chat_id,
+            "created_at": str(ai_msg.created_at),
+            "message_id": ai_msg.id
+        }
+
+        collection.add(
+        documents=[content, full_response],
+        embeddings=[embed_text(content), embed_text(full_response)],
+        metadatas=[
+                {
+                    "sender": "user",
+                    "chat_id": chat_id,
+                    "created_at": user_msg_data["created_at"],
+                    "message_id": user_msg_data["message_id"]
+                },
+                {
+                    "sender": "ai",
+                    "chat_id": chat_id,
+                    "created_at": ai_msg_data["created_at"],
+                    "message_id": ai_msg_data["message_id"]
+                }
+            ],
+            ids=[f"user_{user_msg_data['message_id']}", f"ai_{ai_msg_data['message_id']}"]
     )
 
-
-    return jsonify({
-        "chat_id": chat.id,
-        "title": chat.title,
-      
-        "created_at": chat.created_at,
-        "agent": agent_type,
-        "messages": [
-            {"id": user_msg.id, "sender": user_msg.sender, "content": user_msg.content}
-        ]
-    }), 201
+    return Response(stream_with_context(generate()), mimetype="text/plain")
 
 
-
-@chat_bp.route("/chat/<int:chat_id>", methods=["GET"])
+#Streaming first ai message of first user prompt
+@message_bp.route("/chat/<int:chat_id>/first-message", methods=["GET"])
 @jwt_required()
-def get_chat(chat_id):
-    chat = Chat.query.get_or_404(chat_id)
-    messages = Message.query.filter_by(chat_id=chat.id).all()
-    return jsonify({
-        "id": chat.id,
-        "title": chat.title,
-        "model": chat.model,
-        "agent": chat.agent,
-        "messages": [{"id": m.id, "sender": m.sender, "content": m.content} for m in messages]
-    })
-
-@chat_bp.route("/chat/<int:chat_id>", methods=["DELETE"])
-@jwt_required()
-def delete_chat(chat_id):
-    chat = Chat.query.get_or_404(chat_id)
-
-
-    Message.query.filter_by(chat_id=chat.id).delete()
-
-    
-    db.session.delete(chat)
-    db.session.commit()
-
-    try:
-        collection = get_collection(chat.id)
-        
-        collection.delete(where={"chat_id": chat.id})
-        
-       
-    except Exception as e:
-        
-        print(f"Warning: could not delete ChromaDB collection: {e}")
-
-    return jsonify({"message": "Chat and its messages deleted"})
-
-
-# Rename Chat(prompt) on dashboard sidebar
-
-@chat_bp.route("/chat/<int:chat_id>", methods=["PUT"])
-@jwt_required()
-def update_chat(chat_id):
+def stream_chat_first(chat_id):
     user_id = get_jwt_identity()
-    chat = Chat.query.filter_by(id=chat_id, user_id=user_id).first_or_404()
-    data = request.json
-    new_title = data.get("title")
-    if not new_title:
-        return jsonify({"error": "Title is required"}), 400
+    chat_obj = Chat.query.filter_by(id=chat_id, user_id=user_id).first_or_404()
+    model = chat_obj.model
+    validate_model(model)
 
-    chat.title = new_title
-    db.session.commit()
-    return jsonify({"id": chat.id, "title": chat.title})
+    
+
+    
+    agent_type = chat_obj.agent
+    user_msg = Message.query.filter_by(chat_id=chat_id).first_or_404()
+    user_content = user_msg.content
+  
+    collection = get_collection(chat_id)
+
+    system_prompt = AGENTS.get(agent_type) or ""
+  
+   
+
+   
+
+    def generate():
+        full_response = ""
+        stream = client.chat.completions.create(
+            model=model,
+            messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_content}
+    
+    ],
+            stream=True,
+        )
+        for chunk in stream:
+            piece = chunk.choices[0].delta.content
+            if piece:
+                full_response += piece
+                yield piece  
+        existing_ai = Message.query.filter_by(chat_id=chat_id, sender="ai").first()
+        if not existing_ai:
+            ai_msg = Message(chat_id=chat_id, sender="ai", content=full_response)
+            db.session.add(ai_msg)
+            db.session.commit()
+           
+        
+
+        
+            ai_msg_data = {
+                "sender": "ai",
+                "chat_id": chat_id,
+                "created_at": str(ai_msg.created_at),
+                "message_id": ai_msg.id
+            }
+
+            collection.add(
+            documents=[full_response],
+            embeddings=[embed_text(full_response)],
+            metadatas=[
+                
+                    {
+                        "sender": "ai",
+                        "chat_id": chat_id,
+                        "created_at": ai_msg_data["created_at"],
+                        "message_id": ai_msg_data["message_id"]
+                    }
+                ],
+                ids=[f"ai_{ai_msg_data['message_id']}"]
+        )
+       
 
 
-# Liste Chat(prompts) on dashboard sidebar
-@chat_bp.route("/navbar-summaries", methods=["GET"])
+    return Response(stream_with_context(generate()), mimetype="text/plain")
+
+
+@message_bp.route("/chat/<int:chat_id>/messages", methods=["GET"])
 @jwt_required()
-def get_navbar_summaries():
-    user_id = get_jwt_identity() 
-    
-    chats = Chat.query.filter_by(user_id=user_id).order_by(Chat.created_at.desc()).all()
-    
-    summaries = [
+def get_messages(chat_id):
+    messages = (
+        Message.query
+        .filter_by(chat_id=chat_id)
+        .order_by(Message.created_at.asc()) 
+        .all()
+    )
+    return jsonify([
         {
-            "id": chat.id,
-            "title": chat.title
+            "id": m.id,
+            "sender": m.sender,
+            "content": m.content,
+            "created_at": m.created_at.isoformat()
         }
-        for chat in chats
-    ]
-    
-    return jsonify(summaries)
+        for m in messages
+    ])
