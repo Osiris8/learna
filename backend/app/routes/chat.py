@@ -4,12 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from extensions.database import db
 from app.models.chat import Chat
 from app.models.message import Message
-from extensions.chroma import (
-    get_collection, 
-    add_message_to_collection, 
-    delete_chat_collection,
-    get_conversation_context
-)
+from extensions.chroma import get_collection, embed_text
 
 
 chat_bp = Blueprint("chats", __name__)
@@ -43,17 +38,20 @@ def create_chat():
 
    
     db.session.commit()
-    
-    # Add message to ChromaDB for semantic search
-    add_message_to_collection(
-        chat_id=chat.id,
-        message_id=user_msg.id,
-        content=prompt,
-        sender="user",
-        metadata={
-            "model": model,
-            "agent": agent_type
-        }
+    collection = get_collection(chat.id)
+    collection.add(
+    documents=[prompt],
+    embeddings=[embed_text(prompt)],
+    metadatas=[
+        {
+            "sender": "user",
+            "chat_id": chat.id,
+            "created_at": str(user_msg.created_at),
+            "message_id": user_msg.id,
+        },
+       
+    ],
+    ids=[f"user_{user_msg.id}"]  
     )
 
 
@@ -95,10 +93,14 @@ def delete_chat(chat_id):
     db.session.delete(chat)
     db.session.commit()
 
-    # Delete ChromaDB collection
     try:
-        delete_chat_collection(chat.id)
+        collection = get_collection(chat.id)
+        
+        collection.delete(where={"chat_id": chat.id})
+        
+       
     except Exception as e:
+        
         print(f"Warning: could not delete ChromaDB collection: {e}")
 
     return jsonify({"message": "Chat and its messages deleted"})
@@ -138,114 +140,3 @@ def get_navbar_summaries():
     ]
     
     return jsonify(summaries)
-
-# S
-end message to existing chat with AI response
-@chat_bp.route("/chat/<int:chat_id>/message", methods=["POST"])
-@jwt_required()
-def send_message(chat_id):
-    """Send a message to an existing chat and get AI response."""
-    user_id = get_jwt_identity()
-    data = request.json
-    
-    message_content = data.get("content")
-    enable_rag = data.get("enable_rag", True)
-    
-    if not message_content:
-        return jsonify({"error": "Message content is required"}), 400
-    
-    # Verify chat belongs to user
-    chat = Chat.query.filter_by(id=chat_id, user_id=user_id).first_or_404()
-    
-    # Add user message to database
-    user_message = Message(
-        chat_id=chat_id,
-        sender="user",
-        content=message_content
-    )
-    db.session.add(user_message)
-    db.session.commit()
-    
-    # Add user message to ChromaDB
-    add_message_to_collection(
-        chat_id=chat_id,
-        message_id=user_message.id,
-        content=message_content,
-        sender="user"
-    )
-    
-    # Get conversation context for RAG if enabled
-    context_messages = []
-    if enable_rag:
-        context_messages = get_conversation_context(
-            chat_id=chat_id,
-            current_message=message_content,
-            context_limit=5
-        )
-    
-    # TODO: Generate AI response using the context
-    # This will be implemented in task 5.2
-    ai_response = f"I received your message: '{message_content}'. AI response generation will be implemented in the next task."
-    
-    if context_messages:
-        ai_response += f"\n\nBased on our conversation context, I found {len(context_messages)} relevant previous messages."
-    
-    # Add AI response to database
-    ai_message = Message(
-        chat_id=chat_id,
-        sender="assistant",
-        content=ai_response,
-        model_used=chat.model
-    )
-    db.session.add(ai_message)
-    db.session.commit()
-    
-    # Add AI response to ChromaDB
-    add_message_to_collection(
-        chat_id=chat_id,
-        message_id=ai_message.id,
-        content=ai_response,
-        sender="assistant",
-        metadata={
-            "model_used": chat.model,
-            "rag_enabled": enable_rag,
-            "context_count": len(context_messages)
-        }
-    )
-    
-    return jsonify({
-        "user_message": user_message.to_dict(),
-        "ai_message": ai_message.to_dict(),
-        "context_used": len(context_messages) if enable_rag else 0
-    }), 201
-
-
-# Get conversation context for a message (for debugging/testing)
-@chat_bp.route("/chat/<int:chat_id>/context", methods=["POST"])
-@jwt_required()
-def get_message_context(chat_id):
-    """Get conversation context for a message (for testing RAG)."""
-    user_id = get_jwt_identity()
-    data = request.json
-    
-    query = data.get("query")
-    limit = data.get("limit", 5)
-    
-    if not query:
-        return jsonify({"error": "Query is required"}), 400
-    
-    # Verify chat belongs to user
-    chat = Chat.query.filter_by(id=chat_id, user_id=user_id).first_or_404()
-    
-    # Get conversation context
-    context = get_conversation_context(
-        chat_id=chat_id,
-        current_message=query,
-        context_limit=limit
-    )
-    
-    return jsonify({
-        "query": query,
-        "context_messages": context,
-        "context_count": len(context)
-    })
