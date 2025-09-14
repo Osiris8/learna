@@ -57,7 +57,8 @@ learuma-ai/
 │   └── DEVELOPMENT.md      # Development guide
 └── .kiro/                  # Kiro AI assistant configuration
     ├── hooks/              # Agent hooks
-    └── specs/              # Project specifications
+    ├── specs/              # Project specifications
+    └── steering/           # AI steering rules
 ```
 
 ## 🏃‍♂️ Quick Start

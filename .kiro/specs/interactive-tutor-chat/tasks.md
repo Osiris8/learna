@@ -14,7 +14,6 @@
   - Write Flask app factory pattern with configuration management
   - Set up database connections and ORM initialization
   - Configure CORS, JWT, and other Flask extensions
-  - Create basic health check endpoint
   - _Requirements: 5.5, 5.6, 5.7_
 
 - [x] 2.2 Implement database models and migrations
@@ -52,15 +51,15 @@
 
 - [ ] 4. Create basic chat infrastructure
 - [ ] 4.1 Implement conversation management endpoints
-  - Create GET /api/conversations endpoint for user's chat history
-  - Add POST /api/conversations endpoint for new conversation creation
+  - Create GET /api/chat endpoint for user's chat history
+  - Add POST /api/chat endpoint for new conversation creation
   - Implement conversation retrieval with proper user authorization
   - Write unit tests for conversation management
   - _Requirements: 4.1, 4.3, 4.5, 4.7_
 
 - [ ] 4.2 Implement message storage and retrieval
-  - Create GET /api/conversations/<id>/messages endpoint
-  - Add POST /api/conversations/<id>/messages endpoint for new messages
+  - Create GET /api/chat/<id>/messages endpoint
+  - Add POST /api/chat/<id>/messages endpoint for new messages
   - Implement message persistence with conversation context
   - Write unit tests for message operations
   - _Requirements: 2.2, 2.3, 4.2, 4.6_
@@ -122,7 +121,6 @@
   - _Requirements: 2.1, 2.2, 4.3, 4.4, 4.6_
 
 - [ ] 8.2 Implement real-time messaging functionality
-  - Set up Socket.IO client for real-time message updates
   - Add message sending with optimistic UI updates
   - Implement typing indicators and message status
   - Write integration tests for chat interface functionality

@@ -156,13 +156,13 @@ interface ConversationSidebarProps {
 
 #### Chat Endpoints
 ```python
-# GET /api/conversations
+# GET /api/chat
 # Headers: Authorization: Bearer <token>
-# Response: { conversations: [{ id, title, created_at, updated_at }] }
+# Response: { chat: [{ id, title, created_at, updated_at }] }
 
 # POST /api/conversations
 # Headers: Authorization: Bearer <token>
-# Response: { conversation: { id, title, created_at } }
+# Response: { chat: { id, title, created_at } }
 
 # GET /api/conversations/<id>/messages
 # Headers: Authorization: Bearer <token>

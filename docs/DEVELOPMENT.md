@@ -203,8 +203,8 @@ flask db upgrade
 ### Route Organization
 
 - **auth.py**: Authentication endpoints (`/api/auth/*`)
-- **chat.py**: Chat management endpoints (`/api/chats/*`)
-- **message.py**: Message handling endpoints (`/api/messages/*`)
+- **chat.py**: Chat management endpoints (`/api/chat/*`)
+- **message.py**: Message handling endpoints (`/api/message/*`)
 - **upload.py**: File upload endpoints (`/api/upload/*`)
 
 ### Error Handling

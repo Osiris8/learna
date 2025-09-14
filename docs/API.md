@@ -117,7 +117,7 @@ Authorization: Bearer <token>
 
 ## Chat Endpoints
 
-### GET /chats/navbar-summaries
+### GET /chat/navbar-summaries
 
 Get all chat summaries for the authenticated user (for sidebar navigation).
 
@@ -136,7 +136,7 @@ Authorization: Bearer <token>
 ]
 ```
 
-### POST /chats/chat
+### POST /chat/chat
 
 Create a new chat session with initial user message.
 
@@ -171,7 +171,7 @@ Authorization: Bearer <token>
 }
 ```
 
-### GET /chats/chat/{chat_id}
+### GET /chat/chat/{chat_id}
 
 Get specific chat details with all messages.
 
@@ -197,7 +197,7 @@ Authorization: Bearer <token>
 }
 ```
 
-### PUT /chats/chat/{chat_id}
+### PUT /chat/chat/{chat_id}
 
 Update chat title.
 
@@ -228,7 +228,7 @@ Authorization: Bearer <token>
 }
 ```
 
-### DELETE /chats/chat/{chat_id}
+### DELETE /chat/chat/{chat_id}
 
 Delete a specific chat and all its messages.
 
