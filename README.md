@@ -43,7 +43,9 @@ learuma-ai/
 │   │   │   └── upload.py   # File upload routes
 │   │   └── services/       # Business logic services
 │   │       └── agent.py    # AI agent service
-│   ├── extensions/         # Flask extensions (database, chroma)
+│   ├── extensions/         # Flask extensions
+│   │   ├── database.py     # Database configuration
+│   │   └── chroma.py       # Vector database setup
 │   ├── migrations/         # Database migrations
 │   ├── instance/           # Instance-specific files (SQLite DB)
 │   ├── chroma_db/          # Vector database storage
@@ -58,24 +60,52 @@ learuma-ai/
 │   │   ├── chat/           # Chat interface pages
 │   │   │   └── [id]/       # Dynamic chat routes
 │   │   ├── dashboard/      # Dashboard pages
+│   │   │   └── page.tsx    # Dashboard page
 │   │   ├── login/          # Login page
+│   │   │   └── page.tsx    # Login page
 │   │   ├── signup/         # Signup page
+│   │   │   └── page.tsx    # Signup page
 │   │   ├── layout.tsx      # Root layout
-│   │   └── page.tsx        # Home page
+│   │   ├── page.tsx        # Home page
+│   │   ├── globals.css     # Global styles
+│   │   └── favicon.ico     # Site favicon
 │   ├── components/         # React components
-│   │   ├── ui/             # Reusable UI components (button, input, etc.)
+│   │   ├── ui/             # Reusable UI components (20+ components)
+│   │   │   ├── button.tsx  # Button component
+│   │   │   ├── input.tsx   # Input component
+│   │   │   ├── card.tsx    # Card component
+│   │   │   └── [others]    # Additional UI components
 │   │   ├── magicui/        # Magic UI components
-│   │   ├── prompt-kit/     # Prompt-related components
+│   │   │   └── border-beam.tsx # Border beam effect
+│   │   ├── prompt-kit/     # Prompt-related components (10 components)
+│   │   │   ├── chat-container.tsx # Chat container
+│   │   │   ├── message.tsx # Message component
+│   │   │   ├── prompt-input.tsx # Prompt input
+│   │   │   └── [others]    # Additional prompt components
 │   │   ├── chat.tsx        # Main chat interface
 │   │   ├── login-form.tsx  # Login form component
 │   │   ├── signup-form.tsx # Signup form component
-│   │   └── [other components] # Additional UI components
+│   │   ├── dashboard-*.tsx # Dashboard components
+│   │   ├── nav-*.tsx       # Navigation components
+│   │   ├── theme-provider.tsx # Theme provider
+│   │   └── [others]        # Additional UI components
 │   ├── hooks/              # Custom React hooks
+│   │   └── use-mobile.ts   # Mobile detection hook
 │   ├── lib/                # Utility libraries
+│   │   └── utils.ts        # Utility functions
 │   ├── public/             # Static assets and images
+│   │   ├── *.png           # Image assets
+│   │   ├── *.svg           # SVG icons
+│   │   └── [others]        # Additional static files
 │   ├── .env.local          # Local environment variables
 │   ├── .env.example        # Environment template
-│   └── package.json        # Node.js dependencies
+│   ├── package.json        # Node.js dependencies
+│   ├── tsconfig.json       # TypeScript configuration
+│   ├── next.config.ts      # Next.js configuration
+│   ├── postcss.config.mjs  # PostCSS configuration
+│   ├── eslint.config.mjs   # ESLint configuration
+│   ├── components.json     # Component configuration
+│   └── README.md           # Frontend documentation
 ├── docs/                   # Documentation files
 │   ├── API.md              # API documentation
 │   ├── DEPLOYMENT.md       # Deployment guide
@@ -138,7 +168,7 @@ The application will be available at:
 ```bash
 # Backend development
 cd backend
-python main.py
+flask --app main run
 
 # Frontend development
 cd frontend

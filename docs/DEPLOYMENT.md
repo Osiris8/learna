@@ -114,7 +114,7 @@ source .venv/bin/activate
 pip install pip Flask flask-cors flask-jwt-extended Flask-SQLAlchemy python-dotenv chromadb ollama pypdf groq psycopg2
 
 # The application will create tables automatically on first run
-python main.py
+flask --app main run
 ```
 
 ### SQLite Setup (Development/Testing)

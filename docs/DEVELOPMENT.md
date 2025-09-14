@@ -40,7 +40,7 @@ This guide covers development practices, coding standards, and workflows for the
 
 5. **Run the development server**
    ```bash
-   python main.py
+   flask --app main run
    ```
 
 ### Frontend Development Setup
@@ -89,7 +89,9 @@ backend/
 │   ├── database.py      # Database configuration
 │   └── chroma.py        # Vector database setup
 ├── migrations/          # Database migrations
+│   └── __init__.py      # Migration initialization
 ├── instance/            # Instance-specific files
+│   └── app.db           # SQLite database (development)
 ├── chroma_db/           # Vector database storage
 ├── .venv/               # Python virtual environment
 ├── main.py              # Application entry point
@@ -107,25 +109,64 @@ frontend/
 │   ├── chat/           # Chat interface pages
 │   │   └── [id]/       # Dynamic chat routes
 │   ├── dashboard/      # Dashboard pages
+│   │   └── page.tsx    # Dashboard page
 │   ├── login/          # Login page
+│   │   └── page.tsx    # Login page
 │   ├── signup/         # Signup page
+│   │   └── page.tsx    # Signup page
 │   ├── layout.tsx      # Root layout
-│   └── page.tsx        # Home page
+│   ├── page.tsx        # Home page
+│   ├── globals.css     # Global styles
+│   └── favicon.ico     # Site favicon
 ├── components/         # React components
-│   ├── ui/             # Reusable UI components (40+ components)
+│   ├── ui/             # Reusable UI components (20+ components)
+│   │   ├── button.tsx  # Button component
+│   │   ├── input.tsx   # Input component
+│   │   ├── card.tsx    # Card component
+│   │   ├── dialog.tsx  # Dialog component
+│   │   ├── sidebar.tsx # Sidebar component
+│   │   └── [others]    # Additional UI components
 │   ├── magicui/        # Magic UI components
-│   ├── prompt-kit/     # Prompt-related components (9 components)
+│   │   └── border-beam.tsx # Border beam effect
+│   ├── prompt-kit/     # Prompt-related components (10 components)
+│   │   ├── chat-container.tsx # Chat container
+│   │   ├── message.tsx # Message component
+│   │   ├── prompt-input.tsx # Prompt input
+│   │   ├── code-block.tsx # Code block component
+│   │   ├── markdown.tsx # Markdown renderer
+│   │   └── [others]    # Additional prompt components
 │   ├── chat.tsx        # Main chat interface
 │   ├── login-form.tsx  # Login form component
 │   ├── signup-form.tsx # Signup form component
-│   ├── dashboard-*.tsx # Dashboard components
-│   └── [other components] # Navigation, theme, and utility components
+│   ├── dashboard-form.tsx # Dashboard form
+│   ├── dashboard-sidebar.tsx # Dashboard sidebar
+│   ├── nav-favorites.tsx # Navigation favorites
+│   ├── nav-secondary.tsx # Secondary navigation
+│   ├── nav-user.tsx    # User navigation
+│   ├── site-header.tsx # Site header
+│   ├── theme-provider.tsx # Theme provider
+│   ├── hero-section.tsx # Hero section
+│   ├── features-12.tsx # Features section
+│   ├── call-to-action.tsx # CTA component
+│   ├── footer.tsx      # Footer component
+│   └── dark-mode.tsx   # Dark mode toggle
 ├── hooks/              # Custom React hooks
+│   └── use-mobile.ts   # Mobile detection hook
 ├── lib/                # Utility libraries
+│   └── utils.ts        # Utility functions
 ├── public/             # Static assets
+│   ├── *.png           # Image assets
+│   ├── *.svg           # SVG icons
+│   └── [others]        # Additional static files
 ├── .env.local          # Local environment variables
 ├── .env.example        # Environment template
-└── package.json        # Dependencies and scripts
+├── package.json        # Dependencies and scripts
+├── tsconfig.json       # TypeScript configuration
+├── next.config.ts      # Next.js configuration
+├── postcss.config.mjs  # PostCSS configuration
+├── eslint.config.mjs   # ESLint configuration
+├── components.json     # Component configuration
+└── README.md           # Frontend documentation
 ```
 
 ## Coding Standards
