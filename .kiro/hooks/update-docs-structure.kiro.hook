@@ -1,0 +1,19 @@
+{
+  "enabled": true,
+  "name": "Documentation Structure Updater",
+  "description": "Automatically updates project documentation when files or folders are added, removed, or renamed in the project structure",
+  "version": "1",
+  "when": {
+    "type": "userTriggered",
+    "patterns": [
+      "**/*",
+      "**/*/",
+      "README.md",
+      "frontend/README.md"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "The project structure has changed. Please update the documentation (README.md files) to reflect the current file and folder structure. Focus on maintaining accurate project organization documentation, including any new directories, configuration files, or structural changes that would be relevant for developers understanding the project layout."
+  }
+}
