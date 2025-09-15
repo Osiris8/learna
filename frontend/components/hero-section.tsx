@@ -94,7 +94,7 @@ export default function HeroSection() {
                 <div className="mt-8">
                   <Button size="lg" asChild>
                     <Link
-                      href="https://github.com/Osiris8/learuma"
+                      href="https://github.com/Osiris8/learna"
                       target="_blank"
                     >
                       <Rocket className="relative size-4" />
